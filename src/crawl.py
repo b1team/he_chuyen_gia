@@ -23,7 +23,7 @@ def get_rating():
     wd.get("http://fhub.vn/rating")
     element = wd.find_element(By.CSS_SELECTOR, '#all_stocks')
     wd.execute_script("arguments[0].click();", element)
-
+    time.sleep(0.5)
     bs_obj = BSoup(wd.page_source, 'html.parser')
     data_dic = {}
 
@@ -70,18 +70,18 @@ def set_data(code: str, dict_data: dict):
         class_="col-xs-12 col-sm-5 col-md-5 col-c bg-50")[1].find_all(
             'p')[3].find('b').get_text()
 
-    dict_data[code]['tien_cao_homnay'] = tien_cao_homnay
-    dict_data[code]['tien_thap_homnay'] = tien_thap_homnay
-    dict_data[code]['tien_thap_52T'] = tien_thap_52T
-    dict_data[code]['tien_cao_52T'] = tien_cao_52T
+    dict_data['tien_cao_homnay'] = tien_cao_homnay
+    dict_data['tien_thap_homnay'] = tien_thap_homnay
+    dict_data['tien_thap_52T'] = tien_thap_52T
+    dict_data['tien_cao_52T'] = tien_cao_52T
     # Doanh thu
     doanh_thu_quy_gan_nhat = soup.find(
         id='table-0').find_all('tr')[1].find_all('td')[-1].get_text()
     doanh_thu_quy_gan_nhat_lien_ke = soup.find(
         id='table-0').find_all('tr')[1].find_all('td')[-2].get_text()
 
-    dict_data[code]['doanh_thu_quy_gan_nhat'] = doanh_thu_quy_gan_nhat
-    dict_data[code][
+    dict_data['doanh_thu_quy_gan_nhat'] = doanh_thu_quy_gan_nhat
+    dict_data[
         'doanh_thu_quy_gan_nhat_lien_ke'] = doanh_thu_quy_gan_nhat_lien_ke
 
     # EPS
@@ -92,9 +92,9 @@ def set_data(code: str, dict_data: dict):
     EPS_Q_gan_nhat_lien_ke = soup.find(
         id='table-2').find_all('tr')[1].find_all('td')[-2].get_text()
 
-    dict_data[code]['EPS_hom_nay'] = EPS_hom_nay
-    dict_data[code]['EPS_Q_gan_nhat'] = EPS_Q_gan_nhat
-    dict_data[code]['EPS_Q_gan_nhat_lien_ke'] = EPS_Q_gan_nhat_lien_ke
+    dict_data['EPS_hom_nay'] = EPS_hom_nay
+    dict_data['EPS_Q_gan_nhat'] = EPS_Q_gan_nhat
+    dict_data['EPS_Q_gan_nhat_lien_ke'] = EPS_Q_gan_nhat_lien_ke
 
     element = wd.find_element(
         By.CSS_SELECTOR,
@@ -109,8 +109,8 @@ def set_data(code: str, dict_data: dict):
     EPS_Q_gan_nhat_lien_ke_nam_truoc = soup.find(
         id='table-2').find_all('tr')[1].find_all('td')[-2].get_text()
 
-    dict_data[code]['EPS_Q_gan_nhat_nam_truoc'] = EPS_Q_gan_nhat_nam_truoc
-    dict_data[code][
+    dict_data['EPS_Q_gan_nhat_nam_truoc'] = EPS_Q_gan_nhat_nam_truoc
+    dict_data[
         'EPS_Q_gan_nhat_lien_ke_nam_truoc'] = EPS_Q_gan_nhat_lien_ke_nam_truoc
 
     # SAU click năm
@@ -127,42 +127,37 @@ def set_data(code: str, dict_data: dict):
     LNST_nam_truoc_nua = soup.find(
         id='table-0').find_all('tr')[4].find_all('td')[-3].get_text()
 
-    dict_data[code]['LNST_nam_gan_nhat'] = LNST_nam_gan_nhat
-    dict_data[code]['LNST_nam_truoc'] = LNST_nam_truoc
-    dict_data[code]['LNST_nam_truoc_nua'] = LNST_nam_truoc_nua
+    dict_data['LNST_nam_gan_nhat'] = LNST_nam_gan_nhat
+    dict_data['LNST_nam_truoc'] = LNST_nam_truoc
+    dict_data['LNST_nam_truoc_nua'] = LNST_nam_truoc_nua
 
     ROE_nam_gan_nhat = soup.find(
         id='table-2').find_all('tr')[5].find_all('td')[-1].get_text()
     ROE_nam_gan_nhat_lien_ke = soup.find(
         id='table-2').find_all('tr')[5].find_all('td')[-2].get_text()
 
-    dict_data[code]['ROE_nam_gan_nhat'] = ROE_nam_gan_nhat
-    dict_data[code]['ROE_nam_gan_nhat_lien_ke'] = ROE_nam_gan_nhat_lien_ke
+    dict_data['ROE_nam_gan_nhat'] = ROE_nam_gan_nhat
+    dict_data['ROE_nam_gan_nhat_lien_ke'] = ROE_nam_gan_nhat_lien_ke
 
     return dict_data
 
 
+def solve(stock_code: str):
+    data_dic = get_rating()
+    stock = data_dic[stock_code]
+    print(stock)
+    while True:
+        try:
+            data = set_data(stock_code, stock)
+            break
+        except Exception as ex:
+            print(ex)
+            pass
+
+    return data
+
+
 if __name__ == '__main__':
     # get_rating data
-    data_dic = get_rating()
-    with open('data.json', 'r') as f:
-        dataa = json.load(f)
-
-    # crawl all stock code in dataa
-    key_not_pass = []
-    for key, _ in dataa.items():
-        count = 0
-        if len(dataa[key]) < 22:
-            while True:
-                if count > 10:
-                    key_not_pass.append(key)
-                    break
-                try:
-                    data = set_data(key, data_dic)
-                    with open('data.json', 'w') as f:
-                        f.write(json.dumps(data, indent=4))
-                    break
-                except Exception as ex:
-                    count = count + 1
-                    print(ex)
-                    pass
+    data = solve('SSI')
+    print(data)
