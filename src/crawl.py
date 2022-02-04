@@ -184,5 +184,6 @@ data = {
     "LNST_nam_truoc":"1,255,932",
     "LNST_nam_truoc_nua":"907,097",
     "ROE_nam_gan_nhat":"22.49",
+    "ROE_nam_gan_nhat_lien_ke":"13.05"
  }
 """
