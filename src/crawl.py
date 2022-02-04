@@ -161,3 +161,28 @@ if __name__ == '__main__':
     # get_rating data
     data = solve('SSI')
     print(data)
+"""
+data = {
+    "stock_code":"SSI",
+    "RS_rating":"92",
+    "AD_rating":"A+",
+    "EPS_rating":"27",
+    "SMR_rating":"A",
+    "composite_rating":"93",
+    "tien_cao_homnay":"45,050",
+    "tien_thap_homnay":"43,200",
+    "tien_thap_52T":"20,000",
+    "tien_cao_52T":"55,900",
+    "doanh_thu_quy_gan_nhat":"7,292,477",
+    "doanh_thu_quy_gan_nhat_lien_ke":"4,366,801",
+    "EPS_hom_nay":"1,955",
+    "EPS_Q_gan_nhat":"3,651.00",
+    "EPS_Q_gan_nhat_lien_ke":"2,178.00",
+    "EPS_Q_gan_nhat_nam_truoc":"2,372.00",
+    "EPS_Q_gan_nhat_lien_ke_nam_truoc":"1,826.00",
+    "LNST_nam_gan_nhat":"2,671,974",
+    "LNST_nam_truoc":"1,255,932",
+    "LNST_nam_truoc_nua":"907,097",
+    "ROE_nam_gan_nhat":"22.49",
+ }
+"""
