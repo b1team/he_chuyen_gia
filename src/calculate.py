@@ -52,7 +52,7 @@ def calculate_index(data: dict) -> dict:
     RS_rating = data['RS_rating']
     SMR_rating = data['SMR_rating']
     PRICE = data['tien_cao_homnay'] / data['tien_cao_52T']
-    DOANH_THU = data['doanh_thu_quy_gan_nhat'] / data[
+    REVENUE = data['doanh_thu_quy_gan_nhat'] / data[
         'doanh_thu_quy_gan_nhat_lien_ke']
 
     return {
@@ -64,5 +64,5 @@ def calculate_index(data: dict) -> dict:
         "RS_rating": RS_rating,
         "SMR_rating": SMR_rating,
         "PRICE": (PRICE - 1) * 100,
-        "DOANH_THU": (DOANH_THU - 1) * 100
+        "REVENUE": (REVENUE - 1) * 100
     }
