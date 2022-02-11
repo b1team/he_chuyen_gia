@@ -1,0 +1,8 @@
+CACHING_FILE = "cache.json"
+LOG_LEVEL = "INFO"
+
+MONGODB_URI = "mongodb://localhost:27017"
+MONGODB_DB_NAME = "expertdb"
+
+CRAWL_RETRY_TIMES = 3
+CRAWL_RETRY_DEALY = 5
