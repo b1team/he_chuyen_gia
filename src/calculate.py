@@ -20,7 +20,7 @@ data = {
     "LNST_nam_truoc": "1,255,932",
     "LNST_nam_truoc_nua": "907,097",
     "ROE_nam_gan_nhat": "22.49",
-    "ROE_nam_gan_nhat_lien_ke": "13.05"
+    "ROE_nam_gan_nhat_lien_ke": "13.05",
 }
 
 assign = {
@@ -28,14 +28,14 @@ assign = {
     2: range(25, 50),
     3: range(50, 75),
     4: range(75, 100),
-    5: range(100, 500)
+    5: range(100, 500),
 }
 
 
 def format_value(data: dict) -> dict:
     for key, value in data.items():
         try:
-            data[key] = float(value.replace(',', ''))
+            data[key] = float(value.replace(",", ""))
         except Exception:
             pass
 
@@ -44,16 +44,15 @@ def format_value(data: dict) -> dict:
 
 def calculate_index(data: dict) -> dict:
     data = format_value(data)
-    EPS = data['EPS_Q_gan_nhat'] / data['EPS_Q_gan_nhat_nam_truoc']
-    LNST = data['LNST_nam_gan_nhat'] / data['LNST_nam_truoc']
-    ROE = data['ROE_nam_gan_nhat'] / data['ROE_nam_gan_nhat_lien_ke']
-    EPS_rating = data['EPS_rating']
-    AD_rating = data['AD_rating']
-    RS_rating = data['RS_rating']
-    SMR_rating = data['SMR_rating']
-    PRICE = data['tien_cao_homnay'] / data['tien_cao_52T']
-    REVENUE = data['doanh_thu_quy_gan_nhat'] / data[
-        'doanh_thu_quy_gan_nhat_lien_ke']
+    EPS = data["EPS_Q_gan_nhat"] / data["EPS_Q_gan_nhat_nam_truoc"]
+    LNST = data["LNST_nam_gan_nhat"] / data["LNST_nam_truoc"]
+    ROE = data["ROE_nam_gan_nhat"] / data["ROE_nam_gan_nhat_lien_ke"]
+    EPS_rating = data["EPS_rating"]
+    AD_rating = data["AD_rating"]
+    RS_rating = data["RS_rating"]
+    SMR_rating = data["SMR_rating"]
+    PRICE = data["tien_cao_homnay"] / data["tien_cao_52T"]
+    REVENUE = data["doanh_thu_quy_gan_nhat"] / data["doanh_thu_quy_gan_nhat_lien_ke"]
 
     return {
         "EPS": (EPS - 1) * 100,
@@ -64,5 +63,5 @@ def calculate_index(data: dict) -> dict:
         "RS_rating": RS_rating,
         "SMR_rating": SMR_rating,
         "PRICE": (PRICE - 1) * 100,
-        "REVENUE": (REVENUE - 1) * 100
+        "REVENUE": (REVENUE - 1) * 100,
     }
