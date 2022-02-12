@@ -6,7 +6,6 @@ from config import MONGODB_DB_NAME, MONGODB_URI
 client = MongoClient(MONGODB_URI)
 db = client[MONGODB_DB_NAME]
 
-
 def find_all_rules():
     docs = []
     rules = db.rules.find()
