@@ -1,4 +1,8 @@
-from re import L
+from src.log import setup_logging
+from config import LOG_LEVEL
+
+setup_logging(name="src", level=LOG_LEVEL)
+
 import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication

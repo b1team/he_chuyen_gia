@@ -76,6 +76,8 @@ def count_value(rules: list) -> float:
 
 
 def percent_value(value: float, total: float) -> float:
+    if not total:
+        return 0.0
     return value / total * 100
 
 def percent_to_text(percent_value: float, point: float, total: float) -> str:
