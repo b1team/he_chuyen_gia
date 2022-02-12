@@ -4,12 +4,14 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import QDialog, QApplication
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QPlainTextEdit
+from PyQt5.QtWidgets import QMainWindow, QWidget, QPlainTextEdit
 import pandas as pd
 from src.crawl import solve
 from src.database import find_all_rules
-from src.rules import insert_new_rule, update_new_rule, delete_rule
-from PyQt5.QtWidgets import QPlainTextEdit
-from PyQt5.QtWidgets import QMainWindow, QWidget, QPlainTextEdit
+from src.rules import insert_new_rule, update_new_rule, delete_rule,parse_rules_conditions
+from src.calculate import calculate_index,count_value, percent_value, percent_to_text
+from src.core import expert_system
 
 class Main(QDialog):
     def __init__(self):
@@ -27,10 +29,12 @@ class Main(QDialog):
         print('load rule')
         docs = find_all_rules()
         self.ruleTbl.setRowCount(len(docs))
-        self.ruleTbl.setColumnWidth(0, 385)
+        self.ruleTbl.setColumnWidth(0, 250)
         self.ruleTbl.setColumnWidth(1, 100)
         self.ruleTbl.setColumnWidth(2, 100)
         self.ruleTbl.setColumnWidth(3, 100)
+        self.ruleTbl.setColumnWidth(4, 235)
+
         i = 0
         conditionStr = ''
         for doc in docs:
@@ -39,8 +43,9 @@ class Main(QDialog):
             self.ruleTbl.setItem(i, 1, QtWidgets.QTableWidgetItem(doc["name"]))
             self.ruleTbl.setItem(i, 2, QtWidgets.QTableWidgetItem(doc["description"]))
             self.ruleTbl.setItem(i, 3, QtWidgets.QTableWidgetItem(doc["value"]))
+            print(doc["conditions"])
             for condition in doc["conditions"]:
-                conditionStr = condition[0] + ' ' 
+                conditionStr = condition[0] + ' ' +  condition[1] + ' ' + condition[2] + '\n'
             self.ruleTbl.setItem(i, 4, QtWidgets.QTableWidgetItem(conditionStr))
             i+= 1
         print(docs)
@@ -59,6 +64,34 @@ class Main(QDialog):
         rowItemValue= self.ruleTbl.item(row,3).text()
         rowItemCondition= self.ruleTbl.item(row,4).text()
         return rowItemId,rowItemName,rowItemDes,rowItemValue,rowItemCondition
+
+    def getRowData(self):
+        print('get data from table')
+        VALUE = 1
+        return {
+            "stock_code": self.dataTbl.item(0,VALUE).text(),
+            "RS_rating": self.dataTbl.item(1,VALUE).text(),
+            "AD_rating": self.dataTbl.item(2,VALUE).text(),
+            "EPS_rating": self.dataTbl.item(3,VALUE).text(),
+            "SMR_rating": self.dataTbl.item(4,VALUE).text(),
+            "composite_rating": self.dataTbl.item(5,VALUE).text(),
+            "tien_cao_homnay": self.dataTbl.item(6,VALUE).text(),
+            "tien_thap_homnay": self.dataTbl.item(7,VALUE).text(),
+            "tien_thap_52T": self.dataTbl.item(8,VALUE).text(),
+            "tien_cao_52T": self.dataTbl.item(9,VALUE).text(),
+            "doanh_thu_quy_gan_nhat": self.dataTbl.item(10,VALUE).text(),
+            "doanh_thu_quy_gan_nhat_lien_ke": self.dataTbl.item(11,VALUE).text(),
+            "EPS_hom_nay": self.dataTbl.item(12,VALUE).text(),
+            "EPS_Q_gan_nhat": self.dataTbl.item(13,VALUE).text(),
+            "EPS_Q_gan_nhat_lien_ke": self.dataTbl.item(14,VALUE).text(),
+            "EPS_Q_gan_nhat_nam_truoc": self.dataTbl.item(15,VALUE).text(),
+            "EPS_Q_gan_nhat_lien_ke_nam_truoc": self.dataTbl.item(16,VALUE).text(),
+            "LNST_nam_gan_nhat": self.dataTbl.item(17,VALUE).text(),
+            "LNST_nam_truoc": self.dataTbl.item(18,VALUE).text(),
+            "LNST_nam_truoc_nua": self.dataTbl.item(19,VALUE).text(),
+            "ROE_nam_gan_nhat": self.dataTbl.item(20,VALUE).text(),
+            "ROE_nam_gan_nhat_lien_ke": self.dataTbl.item(21,VALUE).text(),
+        }
 
     def loadCrawlDataFunction(self):
         data = solve(self.stockInput.text())
@@ -133,8 +166,16 @@ class Main(QDialog):
         self.dataTbl.setItem(21, 1, QtWidgets.QTableWidgetItem(data["ROE_nam_gan_nhat_lien_ke"]))
 
     def advisoryFunction(self):
-        self.resultLb.setText("AloAlo")
         self.resultLb.setAlignment(Qt.AlignCenter)
+        data = self.getRowData()
+        caculate_data = calculate_index(data)
+        rules = find_all_rules()
+        point = expert_system(rules, caculate_data)
+        print(point)
+        total_point_rule = count_value(rules)
+        percent = percent_value(point, total_point_rule)
+        result = percent_to_text(percent, point, total_point_rule)
+        self.resultLb.setText(result)
 
     def addRuleFunction(self):
         print('create')
@@ -185,9 +226,6 @@ class Create(QDialog):
             self.ruleInput.clear()
         except:
             print('failed')
-
-    def deleteRuleFunction(self):
-        print('')
 
 app=QApplication(sys.argv)
 mainwindow=Main()

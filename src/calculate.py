@@ -65,3 +65,27 @@ def calculate_index(data: dict) -> dict:
         "PRICE": (PRICE - 1) * 100,
         "REVENUE": (REVENUE - 1) * 100,
     }
+
+
+def count_value(rules: list) -> float:
+    result = 0
+    for rule in rules:
+        result += float(rule["value"])
+
+    return result
+
+
+def percent_value(value: float, total: float) -> float:
+    return value / total * 100
+
+def percent_to_text(percent_value: float, point: float, total: float) -> str:
+    if percent_value > 95:
+        return f"Cổ phiểu thỏa mãn {point}/{total} ({percent_value}%) tập luât. \nNên chọn cổ phiếu này đầu tư"
+    if percent_value > 90:
+        return f"Cổ phiểu thỏa mãn {point}/{total} ({percent_value}%) tập luât. \nCổ phiếu đáng để lựa chọn"
+    if percent_value > 80:
+        return f"Cổ phiểu đạt {point}/{total} ({percent_value}%) thỏa mãn so với tập luât. \nCổ phiểu thuộc diện xem xét"
+    if percent_value >= 70:
+        return f"Cổ phiểu tính ra {point}/{total} ({percent_value}%) thỏa mãn tập luât. \nCổ phiếu không thuộc diện xem xét"
+    if percent_value < 70:
+        return f"Cổ phiểu đạt {point}/{total} ({percent_value}%). \nCổ phiếu thuộc diện bỏ qua, không đáng đầu tư"

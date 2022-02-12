@@ -192,7 +192,7 @@ font-size:20px;</string>
     </rect>
    </property>
    <property name="text">
-    <string>Chỉnh sửa tập luật</string>
+    <string>Thêm tập luật</string>
    </property>
   </widget>
   <widget class="QPushButton" name="deleteBtn">
