@@ -18,7 +18,6 @@ def find_all_rules():
 
 def insert_rule(rule: dict):
     doc = db.rules.insert_one(rule)
-
     return doc
 
 

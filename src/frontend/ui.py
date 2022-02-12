@@ -1,4 +1,4 @@
-from re import L
+from re import I, L
 import sys
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import QDialog, QApplication
@@ -20,12 +20,46 @@ class Main(QDialog):
         self.addRuleBtn.clicked.connect(self.addRuleFunction)
         self.updateBtn.clicked.connect(self.updateRuleFunction)
         self.deleteBtn.clicked.connect(self.deleteRuleFunction)
-    #     self.loadRule()
+        self.loadRule()
+        self.ruleTbl.clicked.connect(self.getItemFunction)
 
-    # def loadRule(self):
-    #     docs = find_all_rules()
-    #     print(docs)
-        
+    def loadRule(self):
+        print('load rule')
+        docs = find_all_rules()
+        self.ruleTbl.setRowCount(len(docs))
+        self.ruleTbl.setColumnWidth(0, 385)
+        self.ruleTbl.setColumnWidth(1, 100)
+        self.ruleTbl.setColumnWidth(2, 100)
+        self.ruleTbl.setColumnWidth(3, 100)
+        i = 0
+        conditionStr = ''
+        for doc in docs:
+            print(doc["_id"])
+            self.ruleTbl.setItem(i, 0, QtWidgets.QTableWidgetItem(doc["_id"]))
+            self.ruleTbl.setItem(i, 1, QtWidgets.QTableWidgetItem(doc["name"]))
+            self.ruleTbl.setItem(i, 2, QtWidgets.QTableWidgetItem(doc["description"]))
+            self.ruleTbl.setItem(i, 3, QtWidgets.QTableWidgetItem(doc["value"]))
+            for condition in doc["conditions"]:
+                conditionStr = condition[0] + ' ' 
+            self.ruleTbl.setItem(i, 4, QtWidgets.QTableWidgetItem(conditionStr))
+            i+= 1
+        print(docs)
+    
+    def getItemFunction(self):
+        print('get item')
+        row = self.ruleTbl.currentRow()
+        col = self.ruleTbl.currentColumn()
+        # text = self.ruleTbl.item(row, col).text()
+        # print('row ', row)
+        # print('col ', col)
+        # print(text)
+        rowItemId = self.ruleTbl.item(row,0).text()
+        rowItemName= self.ruleTbl.item(row,1).text()
+        rowItemDes= self.ruleTbl.item(row,2).text()
+        rowItemValue= self.ruleTbl.item(row,3).text()
+        rowItemCondition= self.ruleTbl.item(row,4).text()
+        return rowItemId,rowItemName,rowItemDes,rowItemValue,rowItemCondition
+
     def loadCrawlDataFunction(self):
         data = solve(self.stockInput.text())
 
@@ -113,11 +147,15 @@ class Main(QDialog):
 
     def updateRuleFunction(self):
         print('update')
-        insert_new_rule(self.nameInput.text(), self.descriptionInput.text(), self.valueInput.text(), self.con)
+        rowItemId,rowItemName,rowItemDes,rowItemValue,rowItemCondition = self.getItemFunction()
+        update_new_rule(rowItemId,rowItemName,rowItemDes,rowItemValue,rowItemCondition)
+        self.loadRule()
 
     def deleteRuleFunction(self):
         print('delete')
- 
+        rowItemId,rowItemName,rowItemDes,rowItemValue,rowItemCondition = self.getItemFunction()
+        delete_rule(rowItemId)
+        self.loadRule()
 
 class Create(QDialog):
     def __init__(self):
@@ -139,8 +177,14 @@ class Create(QDialog):
 
     def createRuleFunction(self):
         print('createRule')
-        # rule_new = insert_new_rule(self.nameInput.text(), self.descriptionInput.text(), self.valueInput.text(), self.ruleInput.toPlainText())
-        print(self.ruleInput.toPlainText())
+        try:
+            rule_new = insert_new_rule(self.nameInput.text(), self.descriptionInput.text(), self.valueInput.text(), self.ruleInput.toPlainText())
+            self.nameInput.clear()
+            self.descriptionInput.clear()
+            self.valueInput.clear()
+            self.ruleInput.clear()
+        except:
+            print('failed')
 
     def deleteRuleFunction(self):
         print('')
