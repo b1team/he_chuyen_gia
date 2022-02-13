@@ -4,14 +4,14 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import QDialog, QApplication
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QPlainTextEdit
-from PyQt5.QtWidgets import QMainWindow, QWidget, QPlainTextEdit
+from PyQt5.QtWidgets import QPlainTextEdit, QVBoxLayout,QMainWindow, QWidget, QPlainTextEdit,QLabel, QTableWidget,QHeaderView,QTableWidgetItem, QPushButton
 import pandas as pd
 from src.crawl import solve
 from src.database import find_all_rules
 from src.rules import insert_new_rule, update_new_rule, delete_rule,parse_rules_conditions
 from src.calculate import calculate_index,count_value, percent_value, percent_to_text
 from src.core import expert_system
+from random import randint
 
 class Main(QDialog):
     def __init__(self):
@@ -25,6 +25,7 @@ class Main(QDialog):
         self.loadRule()
         self.ruleTbl.clicked.connect(self.getItemFunction)
         self.calculated_data = None
+        self.mainwindow = None 
 
     def loadRule(self):
         print('load rule')
@@ -102,7 +103,7 @@ class Main(QDialog):
         self.resultLb.setText(result)
 
     def addRuleFunction(self):
-        print('create')
+        print('open window create rule')
         create=Create()
         widget.addWidget(create)
         widget.setFixedWidth(600)
@@ -116,8 +117,78 @@ class Main(QDialog):
         update_new_rule(rowItemId,rowItemName,rowItemDes,rowItemValue,rowItemCondition)
         self.loadRule()
 
-    def deleteRuleFunction(self):
-        print('delete')
+    def deleteRuleFunction(self, checked):
+        print('open window delete rule')
+        if self.mainwindow is None:
+            self.mainwindow = DeleteRule()
+        self.mainwindow.show()
+
+class DeleteRule(QWidget):
+    def __init__(self):
+        super().__init__()
+        layout = QVBoxLayout()
+        self.label = QLabel("Chọn dòng muốn xóa:" )
+        self.setFixedHeight(500)
+        self.setFixedWidth(1000)
+        layout.addWidget(self.label)
+
+        self.tableWidget = QTableWidget()
+        self.loadRule()
+        self.tableWidget.horizontalHeader().setStretchLastSection(True)
+        self.tableWidget.horizontalHeader().setSectionResizeMode(
+            QHeaderView.Stretch)
+
+        self.button = QPushButton("Delete rule", self)
+ 
+        # setting name
+        self.button.setAccessibleName("push button")
+ 
+        # adding action to a button
+        self.button.clicked.connect(self.deleteRule)
+ 
+        # accessing the name of button
+        self.name = self.button.accessibleName()
+ 
+        # creating a label to display a name
+        self.label1 = QLabel(self)
+        self.label1.setText(self.name)
+        self.label1.move(200, 200)
+
+        layout.addWidget(self.tableWidget)
+        layout.addWidget(self.button)
+        self.setLayout(layout)
+
+    def loadRule(self):
+        print('load rule in delete popup')
+        docs = find_all_rules()
+        self.tableWidget.setRowCount(len(docs))
+        self.tableWidget.setColumnCount(5)
+        self.tableWidget.setHorizontalHeaderLabels(["ID", "Tên", "Mô tả", "Giá trị", "Điều kiện"])
+        print(len(docs))
+        conditionStr = ''
+        index = 0
+        for doc in docs:
+            self.tableWidget.setItem(index, 0, QtWidgets.QTableWidgetItem(doc["_id"]))
+            self.tableWidget.setItem(index, 1, QtWidgets.QTableWidgetItem(doc["name"]))
+            self.tableWidget.setItem(index, 2, QtWidgets.QTableWidgetItem(doc["description"]))
+            self.tableWidget.setItem(index, 3, QtWidgets.QTableWidgetItem(doc["value"]))
+            for condition in doc["conditions"]:
+                conditionStr = condition[0] + ' ' +  condition[1] + ' ' + condition[2] + '\n'
+            self.tableWidget.setItem(index, 4, QtWidgets.QTableWidgetItem(conditionStr))    
+            index += 1
+
+    def getItemFunction(self):
+        print('get item')
+        row = self.tableWidget.currentRow()
+        col = self.tableWidget.currentColumn()
+        rowItemId = self.tableWidget.item(row,0).text()
+        rowItemName= self.tableWidget.item(row,1).text()
+        rowItemDes= self.tableWidget.item(row,2).text()
+        rowItemValue= self.tableWidget.item(row,3).text()
+        rowItemCondition= self.tableWidget.item(row,4).text()
+        return rowItemId,rowItemName,rowItemDes,rowItemValue,rowItemCondition
+
+    def deleteRule(self):
         rowItemId,rowItemName,rowItemDes,rowItemValue,rowItemCondition = self.getItemFunction()
         delete_rule(rowItemId)
         self.loadRule()
