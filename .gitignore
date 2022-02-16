@@ -129,7 +129,7 @@ dmypy.json
 .pyre/
 
 driver/
-# chromedriver
+chromedriver
 data.json
 config.py
 test.py

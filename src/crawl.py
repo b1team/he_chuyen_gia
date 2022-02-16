@@ -177,16 +177,13 @@ def get_revenue_data(stock_code: str):
 
     dict_data["ROE_nam_gan_nhat"] = ROE_nam_gan_nhat
     dict_data["ROE_nam_gan_nhat_lien_ke"] = ROE_nam_gan_nhat_lien_ke
-    logger.info(
-        "CRAWL REVENUE DATA OF STOCK %s FINISHED. DATA: %s", stock_code, dict_data
-    )
-
     return dict_data
 
 
 def solve(
     stock_code: str, cache_file: str = "data.json", tries: int = 3, delay: float = 5
 ):
+    logger.info("CRAWLING DATA OF STOCK %s", stock_code)
     all_rating_data = retry_call(
         f=get_rating,
         fkwargs={"cache_file": cache_file},
@@ -203,4 +200,5 @@ def solve(
         logger=logger,
     )
     data = {**stock_rating_data, **revenue_data}
+    logger.info("DATA OF STOCK %s FINISHED. DATA: %s", stock_code, data)
     return data

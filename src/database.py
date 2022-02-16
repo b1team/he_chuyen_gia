@@ -6,7 +6,6 @@ from config import MONGODB_DB_NAME, MONGODB_URI
 client = MongoClient(MONGODB_URI)
 db = client[MONGODB_DB_NAME]
 
-
 def find_all_rules():
     docs = []
     rules = db.rules.find()
@@ -19,7 +18,6 @@ def find_all_rules():
 
 def insert_rule(rule: dict):
     doc = db.rules.insert_one(rule)
-
     return doc
 
 

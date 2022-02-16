@@ -21,7 +21,7 @@ def insert_new_rule(name: str, description: str, value: float, conditions_str: s
     }
 
     rule_new = insert_rule(rule)
-
+    
     return rule_new
 
 
