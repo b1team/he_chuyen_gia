@@ -77,7 +77,7 @@ class Main(QDialog):
 
         self.dataTbl.setRowCount(len(calculated_data))
         self.dataTbl.setColumnWidth(0, 300)
-        self.dataTbl.setColumnWidth(1, 166)
+        self.dataTbl.setColumnWidth(1, 175)
 
         index = 0
         for field, value in calculated_data.items():
